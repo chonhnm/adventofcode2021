@@ -5,16 +5,15 @@ where
 
 import Control.Monad.State
 import Data.Functor.Identity (Identity)
-import System.Random (Random (random), StdGen, mkStdGen)
 import Data.List (transpose)
-
-
+import System.Random (Random (random), StdGen, mkStdGen)
 
 someFunc :: IO ()
 someFunc = do
   day1_1
   day1_2
   day2_1
+  day2_2
 
 g :: StdGen
 g = mkStdGen 666
@@ -40,7 +39,7 @@ day1_1 = do
 day1_2 :: IO ()
 day1_2 = do
   contents <- readFile "input_1.txt"
-  print . largeThanPreviousCount . threeSumUp . map readInt . words $ contents
+  print . largeThanPreviousCount . thrrunIdentityTSumUp . map readInt . words $ contents
 
 readInt :: String -> Int
 readInt = read
@@ -48,29 +47,62 @@ readInt = read
 largeThanPreviousCount :: [Int] -> Int
 largeThanPreviousCount xs = length $ filter (uncurry (<)) $ zip xs (tail xs)
 
--- sum up three continuous element
+-- sum up thrrunIdentityT continuous element
 
-threeSumUp :: [Int] -> [Int]
-threeSumUp xs = zipWith3 (\a b c -> a + b + c) xs (tail xs) (tail $ tail xs)
+thrrunIdentityTSumUp :: [Int] -> [Int]
+thrrunIdentityTSumUp xs = zipWith3 (\a b c -> a + b + c) xs (tail xs) (tail $ tail xs)
 
 -- day2
 day2_1 :: IO ()
 day2_1 = do
   contents <- readFile "input_2.txt"
-  print . uncurry (*) . listToTuple . position . lines $ contents
+  print . uncurry (*) . position . lines $ contents
 
-listToTuple :: [Int] -> (Int, Int)
-listToTuple [a, b] = (a, b)
+position :: [String] -> (Int, Int)
+position = foldr (listToTuple . pos) (0, 0)
 
-position :: [String] -> [Int]
-position xs = map sum $ transpose  (map pos xs)
+listToTuple :: (Int, Int) -> (Int, Int) -> (Int, Int)
+listToTuple (a, b) (c, d) = (a + c, b + d)
 
-pos :: String -> [Int]
+pos :: String -> (Int, Int)
 pos x =
   let [cmd, valStr] = words x
       val = readInt valStr
    in case cmd of
-        "forward" -> [val, 0]
-        "up" -> [0, - val]
-        "down" -> [0, val]
-        _ -> [0, 0]
+        "forward" -> (val, 0)
+        "up" -> (0, - val)
+        "down" -> (0, val)
+        _ -> (0, 0)
+
+-- day2_2
+day2_2 :: IO ()
+day2_2 = do
+  contents <- readFile "input_2.txt"
+  print $ run . lines $ contents
+
+data Position = Position {horizon :: Int, depth :: Int, aim :: Int}
+
+evalInput :: [String] -> State Position Int
+evalInput [] = do
+  pos <- get
+  return $ horizon pos * depth pos
+evalInput (x : xs) = do
+  pos <- get
+  put $ getNewPos pos x
+  evalInput xs
+
+getNewPos :: Position -> String -> Position
+getNewPos (Position h d a) x =
+  let [cmd, valStr] = words x
+      val = readInt valStr
+   in case cmd of
+        "forward" -> Position (h + val) (d + val * a) a
+        "up" -> Position h d (a - val)
+        "down" -> Position h d (a + val)
+        _ -> error $ "not support command: " ++ cmd
+
+startState :: Position
+startState = Position 0 0 0
+
+run :: [String] -> Int
+run xs = evalState (evalInput xs) startState
