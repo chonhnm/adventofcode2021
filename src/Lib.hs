@@ -7,6 +7,7 @@ import Control.Monad.State
 import Data.Functor.Identity (Identity)
 import Data.List (transpose)
 import System.Random (Random (random), StdGen, mkStdGen)
+import Data.Char (digitToInt)
 
 someFunc :: IO ()
 someFunc = do
@@ -14,6 +15,7 @@ someFunc = do
   day1_2
   day2_1
   day2_2
+  day3_1
 
 g :: StdGen
 g = mkStdGen 666
@@ -106,3 +108,33 @@ startState = Position 0 0 0
 
 run :: [String] -> Int
 run xs = evalState (evalInput xs) startState
+
+-- day3
+day3_1 :: IO ()
+day3_1 = do
+  contents <- readFile "input_3.txt"
+  print $ runDay3_1 . lines $ contents
+
+runDay3_1 :: [String] -> Int
+runDay3_1 xs = let a = strToOnes xs in gamma a * epsilon a
+
+strToOnes :: [String] -> [(Int, Int)]
+strToOnes xs = map strToOne $ transpose xs
+
+strToOne :: String -> (Int, Int)
+strToOne xs = (foldr (\d a -> digitToInt d + a) 0 xs, length xs)
+
+gamma' :: [(Int, Int)] -> [Int]
+gamma' = map (\(a, b) -> if a >= b `div` 2 then 1 else 0)
+
+epsilon' :: [(Int, Int)] -> [Int]
+epsilon' = map (\(a, b) -> if a < b `div` 2 then 1 else 0)
+
+sumUp :: [Int] -> Int
+sumUp = foldl (\r e -> r*10 + e) 0
+
+gamma :: [(Int, Int)] -> Int
+gamma = sumUp . gamma'
+
+epsilon :: [(Int, Int)] -> Int
+epsilon = sumUp . epsilon'
