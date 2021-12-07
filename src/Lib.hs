@@ -1,12 +1,12 @@
-module Lib
-  ( someFunc,
-  )
-where
+module Lib where
 
 import Control.Monad.State
+import Data.Char (digitToInt)
 import Data.Functor.Identity (Identity)
 import Data.List (transpose)
-import System.Random (Random (random), StdGen, mkStdGen)
+import System.Random (Random (random), RandomGen (genRange), StdGen, mkStdGen)
+
+import Day4
 
 someFunc :: IO ()
 someFunc = do
@@ -106,3 +106,43 @@ startState = Position 0 0 0
 
 run :: [String] -> Int
 run xs = evalState (evalInput xs) startState
+
+-- day3_2
+day3_2 :: IO ()
+day3_2 = do
+  contents <- readFile "input_3.txt"
+  print $ runDay3_2 . lines $ contents
+
+runDay3_2 :: [String] -> Int
+runDay3_2 xs = oxygenGenRate xs 0 * co2GenRate xs 0
+
+oxygenGenRate :: [String] -> Int -> Int
+oxygenGenRate xs i = genRate xs i True
+
+co2GenRate :: [String] -> Int -> Int
+co2GenRate xs i = genRate xs i False
+
+genRate :: [String] -> Int -> Bool -> Int
+genRate [x] _ _ = binaryToInt x
+genRate xs i flag =
+  let len = length xs
+      ones = foldr (\a b -> b + digitToInt (a !! i)) 0 xs
+      a = if flag then '1' else '0'
+      b = if flag then '0' else '1'
+      mostChar = if ones * 2 >= len then a else b
+   in genRate (filter (\a -> a !! i == mostChar) xs) (i + 1) flag
+
+binaryToInt :: String -> Int
+binaryToInt = foldl (\b a -> b * 2 + digitToInt a) 0
+
+-- day4_1
+day4_1 :: IO ()
+day4_1 = do
+  contents <- readFile "input_4_test.txt"
+  showStrs  contents
+
+showStrs :: String -> IO ()
+showStrs = process 
+
+
+
