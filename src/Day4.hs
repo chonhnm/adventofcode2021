@@ -36,9 +36,11 @@ parseAll = do
     many1 space
     Bingo i <$> grids
 
+type Grid = [[Int ]]
+
 data Bingo = Bingo {
   inp :: [Int],
-  grds :: [[[Int]]]
+  grds :: [Grid]
 }  deriving (Show)
 
 
@@ -50,4 +52,8 @@ process xs = do
     let res = runParse xs
     case res of
         Left err -> print err
-        Right b -> print b
+        Right b -> print $ playBingo b
+
+playBingo :: Bingo -> Int
+playBingo = error "not implemented"
+
