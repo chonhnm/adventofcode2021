@@ -24,6 +24,7 @@ dependencies:
 - random
 - mtl
 - parsec
+- containers
 
 library:
   source-dirs: src

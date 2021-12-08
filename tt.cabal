@@ -33,6 +33,7 @@ library
       src
   build-depends:
       base >=4.7 && <5
+    , containers
     , mtl
     , parsec
     , random
@@ -47,6 +48,7 @@ executable tt-exe
   ghc-options: -threaded -rtsopts -with-rtsopts=-N
   build-depends:
       base >=4.7 && <5
+    , containers
     , mtl
     , parsec
     , random
@@ -63,6 +65,7 @@ test-suite tt-test
   ghc-options: -threaded -rtsopts -with-rtsopts=-N
   build-depends:
       base >=4.7 && <5
+    , containers
     , mtl
     , parsec
     , random

@@ -10,10 +10,11 @@ import Day4
 
 someFunc :: IO ()
 someFunc = do
-  day1_1
-  day1_2
-  day2_1
-  day2_2
+  -- day1_1
+  -- day1_2
+  -- day2_1
+  -- day2_2
+  day4_1
 
 g :: StdGen
 g = mkStdGen 666
@@ -138,7 +139,7 @@ binaryToInt = foldl (\b a -> b * 2 + digitToInt a) 0
 -- day4_1
 day4_1 :: IO ()
 day4_1 = do
-  contents <- readFile "input_4_test.txt"
+  contents <- readFile "input_4.txt"
   showStrs  contents
 
 showStrs :: String -> IO ()
