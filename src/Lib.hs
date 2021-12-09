@@ -135,15 +135,3 @@ genRate xs i flag =
 
 binaryToInt :: String -> Int
 binaryToInt = foldl (\b a -> b * 2 + digitToInt a) 0
-
--- day4_1
-day4_1 :: IO ()
-day4_1 = do
-  contents <- readFile "input_4.txt"
-  showStrs  contents
-
-showStrs :: String -> IO ()
-showStrs = process 
-
-
-
