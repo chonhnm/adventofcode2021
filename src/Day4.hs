@@ -17,7 +17,7 @@ day4_1 = do
 day4_2 :: IO ()
 day4_2 = do
   contents <- readFile "input_4.txt"
-  process cal1 contents
+  process cal2 contents
 
 lineOfInput :: Parser [Int]
 lineOfInput = sepBy number (char ',')
@@ -101,28 +101,56 @@ cal1' (x : xs) marked m gs =
             Just c -> calValue c gs
 
 cal2 :: Cal
-cal2 b m = cal2' (inp b) [] m (grds b)
+cal2 b m = cal2' (inp b) [] m (grds b) []
 
-cal2' :: Cal'
-cal2' [] _ _ _ = error "not found winner"
-cal2' (x : xs) marked m gs =
+cal2' :: [Value] -> [Index] -> Map Value [Index] -> [Grid] -> [Index] -> Int
+cal2' [] _ _ _ _ = error "not found winner"
+cal2' (x : xs) marked m gs gidxs =
   case Map.lookup x m of
-    Nothing -> cal2' xs marked m gs
+    Nothing -> cal2' xs marked m gs gidxs
     Just needToMark ->
       let allMarked = marked ++ needToMark
-       in case complete x needToMark allMarked of
-            Nothing -> cal2' xs allMarked m gs
-            Just c -> calValue c gs
+          len = length gs
+       in case addGrdIdx len x needToMark allMarked gidxs of
+            Left a -> cal2' xs marked m gs a
+            Right b -> calValue2 x b allMarked gs
+
+calValue2 :: Value -> [Index] -> [Index] -> [Grid] -> Int
+calValue2 val b marked g =
+  let len = fromIntegral $ length g
+      i = filter (`notElem` b) [0 .. (len - 1)]
+      cg = CompleteGrid val 2 marked
+   in calValue cg g
+
+addGrdIdx :: Int -> Value -> [Index] -> [Index] -> [Index] -> Either [Index] [Index]
+addGrdIdx _ _ [] _ gidx = Left gidx
+addGrdIdx size val (x : xs) marked gidx =
+  let i = itemIdxToGridIdx x
+   in if i `elem` gidx
+        then addGrdIdx size val xs marked gidx
+        else case complete' val x marked of
+          Nothing -> addGrdIdx size val xs marked gidx
+          _ ->
+            if length gidx == (size - 2)
+              then Right (i : gidx)
+              else addGrdIdx size val xs marked (i : gidx)
 
 data CompleteGrid = CompleteGrid
   { cg_val :: Value,
-    cg_gridIdx :: [Index]
+    cg_grdIndex :: Index,
+    cg_markedIdx :: [Index]
   }
   deriving (Show)
 
 complete :: Value -> [Index] -> [Index] -> Maybe CompleteGrid
 complete _ [] _ = Nothing
-complete val all@(x : xs) marked =
+complete val (x : xs) marked =
+  case complete' val x marked of
+    Nothing -> complete val xs marked
+    a -> a
+
+complete' :: Value -> Index -> [Index] -> Maybe CompleteGrid
+complete' val x marked =
   let rem = x `mod` size
       low = x - rem
       high = low + size
@@ -135,14 +163,17 @@ complete val all@(x : xs) marked =
             (\x -> x `mod` col == rem `mod` col)
             mg'
    in if rs == fromIntegral col || cs == fromIntegral col
-        then Just $ CompleteGrid val mg
-        else complete val xs marked
+        then Just $ CompleteGrid val (itemIdxToGridIdx x) mg
+        else Nothing
+
+itemIdxToGridIdx :: Index -> Index
+itemIdxToGridIdx x = fromIntegral x `div` fromIntegral size
 
 calValue :: CompleteGrid -> [Grid] -> Value
 calValue c gs =
-  let gidx = cg_gridIdx c
+  let gidx = cg_markedIdx c
       inpVal = cg_val c
-      i = fromIntegral $ head gidx `div` fromIntegral size
+      i = fromIntegral $ cg_grdIndex c
       gs' = gs !! i
       fgs = concat $ concat gs
       mVal = getVal gidx fgs
