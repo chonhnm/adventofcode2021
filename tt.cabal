@@ -26,7 +26,9 @@ source-repository head
 library
   exposed-modules:
       Day4
+      Day5
       Lib
+      Test
   other-modules:
       Paths_tt
   hs-source-dirs:

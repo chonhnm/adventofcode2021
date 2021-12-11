@@ -6,7 +6,8 @@ import Data.Functor.Identity (Identity)
 import Data.List (transpose)
 import System.Random (Random (random), RandomGen (genRange), StdGen, mkStdGen)
 
-import Day4
+import Day4 ( day4_1, day4_2 )
+import Day5 
 
 someFunc :: IO ()
 someFunc = do
@@ -15,6 +16,7 @@ someFunc = do
   -- day2_1
   -- day2_2
   day4_1
+  day4_2 
 
 g :: StdGen
 g = mkStdGen 666

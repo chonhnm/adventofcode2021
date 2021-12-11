@@ -112,14 +112,13 @@ cal2' (x : xs) marked m gs gidxs =
       let allMarked = marked ++ needToMark
           len = length gs
        in case addGrdIdx len x needToMark allMarked gidxs of
-            Left a -> cal2' xs marked m gs a
+            Left a -> cal2' xs allMarked m gs a
             Right b -> calValue2 x b allMarked gs
 
 calValue2 :: Value -> [Index] -> [Index] -> [Grid] -> Int
 calValue2 val b marked g =
   let len = fromIntegral $ length g
-      i = filter (`notElem` b) [0 .. (len - 1)]
-      cg = CompleteGrid val 2 marked
+      cg = CompleteGrid val (head b) marked
    in calValue cg g
 
 addGrdIdx :: Int -> Value -> [Index] -> [Index] -> [Index] -> Either [Index] [Index]
@@ -131,7 +130,7 @@ addGrdIdx size val (x : xs) marked gidx =
         else case complete' val x marked of
           Nothing -> addGrdIdx size val xs marked gidx
           _ ->
-            if length gidx == (size - 2)
+            if length gidx == (size - 1)
               then Right (i : gidx)
               else addGrdIdx size val xs marked (i : gidx)
 
