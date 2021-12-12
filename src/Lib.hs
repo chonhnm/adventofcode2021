@@ -7,7 +7,7 @@ import Data.List (transpose)
 import System.Random (Random (random), RandomGen (genRange), StdGen, mkStdGen)
 
 import Day4 ( day4_1, day4_2 )
-import Day5 (day5_1)
+import Day5 (day5_1, day5_2)
 
 someFunc :: IO ()
 someFunc = do
@@ -17,6 +17,8 @@ someFunc = do
   -- day2_2
   day4_1
   day4_2 
+  day5_1 
+  day5_2 
 
 g :: StdGen
 g = mkStdGen 666

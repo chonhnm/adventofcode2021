@@ -1,4 +1,4 @@
-module Day5 (day5_1) where
+module Day5 (day5_1, day5_2) where
 
 import Control.Monad.RWS.Strict (void)
 import Data.Map (Map)
@@ -8,25 +8,35 @@ import Text.Parsec hiding (Line)
 import Text.Parsec.String (Parser)
 import Text.Read (Lexeme (String))
 
--- day4_1
+
 day5_1 :: IO ()
 day5_1 = do
   contents <- readFile "input_5.txt"
-  process contents
+  process  contents hvFilter
 
-process :: String -> IO ()
-process xs = do
+day5_2 :: IO ()
+day5_2 = do
+  contents <- readFile "input_5.txt"
+  process  contents hvdFilter  
+
+process :: String-> (Line -> Bool ) -> IO ()
+process xs f = do
   case runParse xs of
     Left a -> print a
-    Right b -> print $ play b
+    Right b -> print $ play b f 
 
-play l =
-  let fl = filter (\x -> horiz x || vertic x || diag x) l
+play :: [Line] -> (Line -> Bool ) -> Int
+play l f =
+  let fl = filter f l
       ps = concatMap lineToPoint fl
       m = pointsToMap ps
    in length $ filter (> 1) $ Map.elems m
 
---(trace ("fl:" ++show fl ++ "; \nps:" ++show ps) m)
+hvFilter :: Line -> Bool 
+hvFilter x = horiz x || vertic x
+
+hvdFilter :: Line -> Bool 
+hvdFilter x = horiz x || vertic x || diag x
 
 pointsToMap :: [Point] -> Map Point Int
 pointsToMap = toMap Map.empty
