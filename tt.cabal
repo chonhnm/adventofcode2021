@@ -27,6 +27,7 @@ library
   exposed-modules:
       Day4
       Day5
+      Day6
       Lib
       Test
   other-modules:

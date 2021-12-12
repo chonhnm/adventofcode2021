@@ -8,6 +8,7 @@ import System.Random (Random (random), RandomGen (genRange), StdGen, mkStdGen)
 
 import Day4 ( day4_1, day4_2 )
 import Day5 (day5_1, day5_2)
+import Day6 (day6_1)
 
 someFunc :: IO ()
 someFunc = do
