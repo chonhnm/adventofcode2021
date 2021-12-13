@@ -2,27 +2,23 @@ module Day6 where
 
 day6_1 :: IO ()
 day6_1 = do
-  contents <- readFile "input_6_test.txt"
-  process $ map read (wordsWhen (== ',') contents)
+  contents <- readFile "input_6.txt"
+  let input = parseInput contents
+  print $ partOne input
+  print $ partTwo input
 
-process :: [Int] -> IO ()
-process xs = print $ length $ lifeCycle 80 (map Old xs)
+oneStep :: Num a => [a] -> [a]
+oneStep [a,b,c,d,e,f,g,h,i] = [b,c,d,e,f,g,h+a,i,a]
+oneStep _ = []
 
-wordsWhen :: (Char -> Bool) -> String -> [String]
-wordsWhen p s = case dropWhile p s of
-  "" -> []
-  s' -> w : wordsWhen p s''
-    where
-      (w, s'') = break p s'
+parseInput :: [Char] -> [Int]
+parseInput input = map (`count` input) "012345678" 
 
-data LanternFish = New Int | Old Int deriving (Show)
+count :: Char -> [Char] -> Int
+count = (length .) . filter . (==)
 
-lifeCycle :: Int -> [LanternFish] -> [LanternFish]
-lifeCycle 0 xs = xs
-lifeCycle n xs = lifeCycle (n -1) (reborn xs)
-  where
-    reborn [] = []
-    reborn (Old 0 : xs) = (Old 6 : reborn xs) ++ [New 8]
-    reborn (Old n : xs) = Old (n -1) : reborn xs
-    reborn (New 0 : xs) = (Old 6 : reborn xs) ++ [New 8]
-    reborn (New n : xs) = Old (n -1) : reborn xs
+partOne :: Num a => [a] -> a
+partOne input = sum $ iterate oneStep input !! 80
+
+partTwo :: Num a => [a] -> a
+partTwo input = sum $ iterate oneStep input !! 256
