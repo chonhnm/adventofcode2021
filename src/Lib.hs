@@ -1,14 +1,15 @@
 module Lib where
 
+import Bird02
+import Chap1
 import Control.Monad.State
 import Data.Char (digitToInt)
 import Data.Functor.Identity (Identity)
 import Data.List (transpose)
-import System.Random (Random (random), RandomGen (genRange), StdGen, mkStdGen)
-
-import Day4 ( day4_1, day4_2 )
+import Day4 (day4_1, day4_2)
 import Day5 (day5_1, day5_2)
 import Day6 (day6_1)
+import System.Random (Random (random), RandomGen (genRange), StdGen, mkStdGen)
 
 someFunc :: IO ()
 someFunc = do
@@ -17,25 +18,25 @@ someFunc = do
   -- day2_1
   -- day2_2
   day4_1
-  day4_2 
-  day5_1 
-  day5_2 
+  day4_2
+  day5_1
+  day5_2
 
-g :: StdGen
-g = mkStdGen 666
+-- g :: StdGen
+-- g = mkStdGen 666
 
-test :: Int
-test = let (a, g') = random g in a `mod` 100
+-- test :: Int
+-- test = let (a, g') = random g in a `mod` 100
 
-t1 :: StateT Integer Identity (Integer, Integer)
-t1 = do
-  a <- get
-  modify (+ 1)
-  b <- get
-  return (a, b)
+-- t1 :: StateT Integer Identity (Integer, Integer)
+-- t1 = do
+--   a <- get
+--   modify (+ 1)
+--   b <- get
+--   return (a, b)
 
-run_t1 :: ((Integer, Integer), Integer)
-run_t1 = runState t1 0
+-- run_t1 :: ((Integer, Integer), Integer)
+-- run_t1 = runState t1 0
 
 day1_1 :: IO ()
 day1_1 = do
